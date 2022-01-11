@@ -280,7 +280,7 @@ namespace Radzen.Blazor
 
         internal void AddColumn(RadzenDataGridColumn<TItem> column)
         {
-            if (!columns.Contains(column))
+            if (!columns.Contains(column) && column.Parent == null)
             {
                 columns.Add(column);
 
@@ -1864,5 +1864,7 @@ namespace Radzen.Blazor
                 }
             }
         }
+
+        internal int deepestChildColumnLevel;
     }
 }

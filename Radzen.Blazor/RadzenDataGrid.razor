@@ -61,22 +61,25 @@
                 }
             </colgroup>
             <thead>
+                @for(var i = 0; i < deepestChildColumnLevel + 1; i++)
+                {
                 <tr>
                     @foreach(var g in groups)
                     {
-                        <th class="rz-col-icon rz-unselectable-text" scope="col">
+                        <th class="rz-col-icon rz-unselectable-text" scope="col" rowspan=@(deepestChildColumnLevel + 1)>
                             <span class="rz-column-title"></span>
                         </th>
                     }
                     @if (Template != null && ShowExpandColumn)
                     {
-                        <th class="rz-col-icon rz-unselectable-text" scope="col">
+                        <th class="rz-col-icon rz-unselectable-text" scope="col" rowspan=@(deepestChildColumnLevel + 1)>
                             <span class="rz-column-title"></span>
                         </th>
                     }
                     @for (var j = 0; j < visibleColumns.Count; j++)
                     {
                         var column = visibleColumns[j];
+
                         var cellAttr = HeaderCellAttributes(column);
 
                         object colspan;
@@ -202,18 +205,19 @@
                         </th>
                     }
                 </tr>
+                }
                 @if (AllowFiltering && FilterMode == FilterMode.Simple && columns.Where(column => column.Filterable && (!string.IsNullOrEmpty(column.GetFilterProperty()) || column.FilterTemplate != null)).Any())
                 {
                     <tr>
                         @foreach(var g in groups)
                         {
-                            <th class="rz-col-icon  rz-unselectable-text" scope="col">
+                            <th class="rz-col-icon  rz-unselectable-text" scope="col" rowspan=@(deepestChildColumnLevel + 1)>
                                 <span class="rz-column-title"></span>
                             </th>
                         }
                         @if (Template != null && ShowExpandColumn)
                         {
-                            <th class="rz-col-icon  rz-unselectable-text" scope="col">
+                            <th class="rz-col-icon  rz-unselectable-text" scope="col" rowspan=@(deepestChildColumnLevel + 1)>
                                 <span class="rz-column-title"></span>
                             </th>
                         }

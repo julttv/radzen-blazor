@@ -23,13 +23,88 @@ namespace Radzen.Blazor
         public RadzenDataGrid<TItem> Grid { get; set; }
 
         /// <summary>
+        /// Gets or sets the columns.
+        /// </summary>
+        /// <value>The columns.</value>
+        [Parameter]
+        public RenderFragment Columns { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent column.
+        /// </summary>
+        /// <value>The parent column.</value>
+        [CascadingParameter]
+        public RadzenDataGridColumn<TItem> Parent { get; set; }
+
+        internal readonly List<RadzenDataGridColumn<TItem>> columns = new List<RadzenDataGridColumn<TItem>>();
+        internal void AddColumn(RadzenDataGridColumn<TItem> column)
+        {
+            if (!columns.Contains(column) && column.Parent != null)
+            {
+                var level = column.GetLevel();
+                if (level > Grid.deepestChildColumnLevel)
+                {
+                    Grid.deepestChildColumnLevel = level;
+                }
+
+                columns.Add(column);
+
+                var descriptor = Grid.sorts.Where(d => d.Property == column?.GetSortProperty()).FirstOrDefault();
+                if (descriptor == null && column.SortOrder.HasValue)
+                {
+                    descriptor = new SortDescriptor() { Property = column.Property, SortOrder = column.SortOrder.Value };
+                    Grid.sorts.Add(descriptor);
+                }
+
+                InvokeAsync(Grid.ChangeState);
+            }
+        }
+
+        internal void RemoveColumn(RadzenDataGridColumn<TItem> column)
+        {
+            if (columns.Contains(column))
+            {
+                columns.Remove(column);
+                if (!Grid.disposed)
+                {
+                    try { InvokeAsync(StateHasChanged); } catch { }
+                }
+            }
+        }
+
+        internal List<RadzenDataGridColumn<TItem>> VisibleColumns()
+        {
+            return columns;
+        }
+
+        internal int GetLevel()
+        {
+            int i = 0;
+            var p = Parent;
+            while (p != null)
+            {
+                p = p.Parent;
+                i++;
+            }
+
+            return i;
+        }
+
+        /// <summary>
         /// Called when initialized.
         /// </summary>
         protected override void OnInitialized()
         {
             if (Grid != null)
             {
-                Grid.AddColumn(this);
+                if (Parent != null)
+                {
+                    AddColumn(this);
+                }
+                else
+                {
+                    Grid.AddColumn(this);
+                }
 
                 if (!string.IsNullOrEmpty(FilterProperty) || Type == null)
                 {
@@ -638,6 +713,8 @@ namespace Radzen.Blazor
         /// </summary>
         public void Dispose()
         {
+            columns.ForEach(c => c.RemoveColumn(c));
+
             Grid?.RemoveColumn(this);
         }
     }
