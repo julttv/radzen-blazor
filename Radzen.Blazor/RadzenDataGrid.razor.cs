@@ -312,7 +312,7 @@ namespace Radzen.Blazor
             return string.Join("", $"{UniqueID}".Split('.')) + column.GetFilterProperty();
         }
 
-        string getFilterDateFormat(RadzenDataGridColumn<TItem> column)
+        internal string getFilterDateFormat(RadzenDataGridColumn<TItem> column)
         {
             if (column != null && !string.IsNullOrEmpty(column.FormatString))
             {
@@ -330,7 +330,7 @@ namespace Radzen.Blazor
             return FilterDateFormat;
         }
 
-        RenderFragment DrawNumericFilter(RadzenDataGridColumn<TItem> column, bool force = true, bool isFirst = true)
+        internal RenderFragment DrawNumericFilter(RadzenDataGridColumn<TItem> column, bool force = true, bool isFirst = true)
         {
             return new RenderFragment(builder =>
             {
@@ -413,20 +413,7 @@ namespace Radzen.Blazor
             }
         }
 
-        private string getFilterIconCss(RadzenDataGridColumn<TItem> column)
-        {
-            var additionalStyle = column.GetFilterValue() != null || column.GetSecondFilterValue() != null || 
-                column.GetFilterOperator() == FilterOperator.IsNotNull || column.GetFilterOperator() == FilterOperator.IsNull 
-                    ? "rz-grid-filter-active" : "";
-            return $"rzi rz-grid-filter-icon {additionalStyle}";
-        }
-
-        /// <summary>
-        /// Called when sort.
-        /// </summary>
-        /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
-        /// <param name="column">The column.</param>
-        protected void OnSort(EventArgs args, RadzenDataGridColumn<TItem> column)
+        internal void OnSort(EventArgs args, RadzenDataGridColumn<TItem> column)
         {
             if (AllowSorting && column.Sortable)
             {
@@ -449,12 +436,7 @@ namespace Radzen.Blazor
             }
         }
 
-        /// <summary>
-        /// Clears the filter.
-        /// </summary>
-        /// <param name="column">The column.</param>
-        /// <param name="closePopup">if set to <c>true</c> [close popup].</param>
-        protected async Task ClearFilter(RadzenDataGridColumn<TItem> column, bool closePopup = false)
+        internal async Task ClearFilter(RadzenDataGridColumn<TItem> column, bool closePopup = false)
         {
             if (closePopup)
             {
@@ -482,12 +464,7 @@ namespace Radzen.Blazor
             await InvokeAsync(Reload);
         }
 
-        /// <summary>
-        /// Applies the filter.
-        /// </summary>
-        /// <param name="column">The column.</param>
-        /// <param name="closePopup">if set to <c>true</c> [close popup].</param>
-        protected async Task ApplyFilter(RadzenDataGridColumn<TItem> column, bool closePopup = false)
+        internal async Task ApplyFilter(RadzenDataGridColumn<TItem> column, bool closePopup = false)
         {
             if (closePopup)
             {
